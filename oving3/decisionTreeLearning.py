@@ -4,6 +4,9 @@ from random import randint
 
 
 def pluralityValue(examples):
+    """
+    Calculates the most common classification within a group
+    """
     ones = 0
     twos = 0
     for i in examples:
@@ -20,12 +23,18 @@ def pluralityValue(examples):
 
 
 def B(q):
+    """
+    Calculates the entropy for a given probability
+    """
     if q==1 or q==0:
         return 0
     else:
         return -(q*log2(q)+(1-q)*log2(1-q))
 
 def numberOfOnes(examples):
+    """
+    Checks the number of "one"-classified examples in the given set
+    """
     count = 0
     for i in examples:
         if i[7]==1:
@@ -34,6 +43,9 @@ def numberOfOnes(examples):
 
 
 def remainder(examples, attribute):
+    """
+    Calculates the sum of entropy for a given attribute
+    """
     firstGroup = []
     secondGroup = []
     for i in examples:
@@ -46,10 +58,16 @@ def remainder(examples, attribute):
     return theSum
 
 def gain(examples, attribute):
+    """
+    Calculates the gain from a given attribute
+    """
     return B(numberOfOnes(examples)/len(examples))-remainder(examples,attribute)
 
 
 def importance(examples, attributes):
+    """
+    Return the attribute with the highest information gain
+    """
     bestGain = gain(examples, attributes[0])
     bestAttribute = attributes[0]
     for i in range(1,len(attributes)-1):
@@ -60,6 +78,9 @@ def importance(examples, attributes):
     return bestAttribute
 
 def randomImportance(examples,attributes):
+    """
+    Returns a random attribute from the attributes list
+    """
     bestGain = 0
     bestAttribute = None
     for i in range(0,len(attributes)-1):
@@ -71,6 +92,9 @@ def randomImportance(examples,attributes):
 
 
 def checkIfAllEqual(examples):
+    """
+    Check if all the datas in the given set has the same classification
+    """
     correct = examples[0][7]
     for i in examples:
         if i[7] != correct:
@@ -79,6 +103,9 @@ def checkIfAllEqual(examples):
 
 
 def decisionTreeLearning(examples, attributes, parentExamples=None):
+    """
+    Recursively creates the decision tree
+    """
     if len(examples)==0:
         return pluralityValue(parentExamples)
     elif checkIfAllEqual(examples):
@@ -107,6 +134,9 @@ def decisionTreeLearning(examples, attributes, parentExamples=None):
 
 
 def fixTrainingData(path):
+    """
+    Changes the input file into two dimensional list
+    """
     file = open(path,'r')
     lines = file.readlines()
     examples = []
@@ -115,6 +145,9 @@ def fixTrainingData(path):
     return examples
 
 def traverseTree(tree,data):
+    """
+    Used to find the expected classification
+    """
     if type(tree) == int:
         return tree
     else:
@@ -122,6 +155,9 @@ def traverseTree(tree,data):
         return traverseTree(tree[key][data[key]],data)
 
 def testTree(tree,data):
+    """
+    Tests a tree versus testing data. Returns the fraction of correct ansvers
+    """
     correct = 0
     incorrect = 0
     for i in data:
@@ -129,15 +165,15 @@ def testTree(tree,data):
             correct += 1
         else:
             incorrect += 1
-    print(correct)
-    print(incorrect)
+    return correct/(correct+incorrect)
 
 def main():
     data = fixTrainingData("data/training.txt")
     attributes = [0,1,2,3,4,5]
     tree = (decisionTreeLearning(data,attributes))
     testData = fixTrainingData("data/test.txt")
-    testTree(tree,data)
+    print(tree)
+    print(testTree(tree,testData))
 
 
 if __name__ == '__main__':
